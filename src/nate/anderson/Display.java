@@ -4,12 +4,10 @@ public class Display {
     
     // initial spacing between armies is defined in the Config class
     private int armySpacing;
-    private ArmyUnit[] armyUnitHolder;
     
     // new display takes no arguments
-    public Display(ArmyUnit[] armyUnitHolder) {
+    public Display() {
     	this.armySpacing = Config.getArmySpacing();
-    	this.armyUnitHolder = armyUnitHolder;
     }
     
     public int getArmySpacing() {
@@ -21,7 +19,7 @@ public class Display {
         this.armySpacing -= spacingChange;
     }
     
-    public void displayBattleField() {
+    public void displayBattleField(ArmyUnit[] armyUnitHolder, String commandInput) {
         
         // main battle display - print out two armies
         System.out.println();
@@ -30,10 +28,10 @@ public class Display {
         System.out.println("organization: " + armyUnitHolder[0].getCohesion());
         System.out.println("morale: " + armyUnitHolder[0].getMorale());
         System.out.println("------------------------------------------------------------");
-        System.out.println("  YOUR LAST COMMAND: " + armyUnitHolder[0].getCommandInput);
+        System.out.println("  YOUR LAST COMMAND: " + commandInput);
         
         // prints out lines between your HUD and your army, based on how far you've advanced
-        for (int spacing = 0; spacing < armyUnitHolder[0].getArmyAdvancePadding; spacing++) {
+        for (int spacing = 0; spacing < armyUnitHolder[0].getArmyAdvancePadding(); spacing++) {
             System.out.println();
         }
         
@@ -49,7 +47,7 @@ public class Display {
         armyUnitHolder[1].renderArmy();
         
         // prints out lines between foe HUD and foe army, based on how far they've advanced
-        for (int spacing = 0; spacing < armyUnitHolder[1].getArmyAdvancePadding; spacing++) {
+        for (int spacing = 0; spacing < armyUnitHolder[1].getArmyAdvancePadding(); spacing++) {
             System.out.println();
         }
         
@@ -58,8 +56,8 @@ public class Display {
         System.out.println("------------------------------------------------------------");
         System.out.println("ENEMY FORCES");
         System.out.println("soldiers: " + armyUnitHolder[1].countTroops());
-        System.out.println("organization: " + armyUnitHolder[1].cohesion);
-        System.out.println("morale: " + armyUnitHolder[1].morale);
+        System.out.println("organization: " + armyUnitHolder[1].getCohesion());
+        System.out.println("morale: " + armyUnitHolder[1].getMorale());
         
         System.out.println();
     }

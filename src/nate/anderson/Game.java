@@ -1,5 +1,7 @@
 package nate.anderson;
 
+import java.util.Scanner;
+
 public class Game {
    
 	/*
@@ -38,15 +40,6 @@ public class Game {
     public int getActivePlayer() {
         return this.activePlayer;
     }
-    
-    public ArmyUnit opponent(int activePlayer) {
-        if (this.activePlayer == 0) {
-            return armyUnitHolder[1];
-        }
-        else {
-            return armyUnitHolder[0];
-        }
-    } 
     
     public void setActivePlayer() {
     	if (activePlayer == 0) {
@@ -94,40 +87,13 @@ public class Game {
 	 */
 	
     public void gameStart() {
-                
+        Scanner scanner = new Scanner(System.in); 
+    	
         // main game loop - after every turn checks to see if either side had lost
         while (true) {
         	String lastCommand = "advance";
         	
-            mainDisplay.displayBattleField();
-            
-            System.out.println("Enter your commmand below");
-            System.out.println(">>> ");
-            String userInput = System.console().readLine();
-            
-            if (userInput.equals("")) {
-                userInput = lastCommand;
-            }
-            else {
-                lastCommand = userInput;
-            }
-        
-            switch (userInput) {
-                case "advance": armyUnitHolder[activePlayer].advanceOrder();
-                break;
-                case "charge": armyUnitHolder[activePlayer].chargeOrder();
-                break;
-                case "throw spears": armyUnitHolder[activePlayer].throwOrder();
-                break;
-                case "retreat": armyUnitHolder[activePlayer].retreatOrder();
-                break;
-                case "fight": armyUnitHolder[activePlayer].fightOrder();
-                break;
-                case "rest": armyUnitHolder[activePlayer].restOrder();
-                break;
-                default: System.out.println("Not a valid command, try again");
-                break;
-            }
+            mainDisplay.displayBattleField(armyUnitHolder, lastCommand);
             
             if (mainDisplay.getArmySpacing() <= 0) {
                 System.out.println("Enter one of the following commands");
@@ -144,9 +110,37 @@ public class Game {
                 System.out.println("- advance         - charge");
                 System.out.println("- rest           - retreat");
             }
-    
+            
+            System.out.println("Enter your commmand below");
+            System.out.print(">>> ");
+            String userInput = scanner.nextLine();
+            
+            if (userInput.equals("\n")) {
+                userInput = lastCommand;
+            }
+            else {
+                lastCommand = userInput;
+            }
+        
+            switch (userInput) {
+                case "advance": armyUnitHolder[activePlayer].advanceOrder(armyUnitHolder, activePlayer);
+                break;
+                case "charge": armyUnitHolder[activePlayer].chargeOrder(armyUnitHolder, activePlayer);
+                break;
+                case "throw spears": armyUnitHolder[activePlayer].throwOrder(armyUnitHolder, activePlayer);
+                break;
+                case "retreat": armyUnitHolder[activePlayer].retreatOrder(armyUnitHolder, activePlayer);
+                break;
+                case "fight": armyUnitHolder[activePlayer].fightOrder(armyUnitHolder, activePlayer);
+                break;
+                case "rest": armyUnitHolder[activePlayer].restOrder(armyUnitHolder, activePlayer);
+                break;
+                default: System.out.println("Not a valid command, try again");
+                break;
+            }
+            
             if (armyUnitHolder[0].countTroops() <= 0 || armyUnitHolder[1].countTroops() <= 0) {
-            	mainDisplay.displayBattleField();
+            	mainDisplay.displayBattleField(armyUnitHolder, lastCommand);
                 return;
             }
         }

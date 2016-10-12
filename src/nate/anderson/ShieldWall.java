@@ -3,10 +3,7 @@ package nate.anderson;
 public class ShieldWall {
             
     public static void main (String[] args) {
-        
-//    	create the display 
-        Display mainDisplay = new Display();
-         
+                 
 //        create the two units
         ArmyUnit yourArmy = new ArmyUnit("Tears of Tyr", "*", 0);
         ArmyUnit foeArmy = new ArmyUnit("Odors of Odin", "@", 1);
@@ -14,6 +11,9 @@ public class ShieldWall {
 //        armyUnitHolder to hold the two units
         ArmyUnit[] armyUnitHolder = { yourArmy, foeArmy };
 
+//    	create the display 
+        Display mainDisplay = new Display();
+        
 //        make the game
         Game game = new Game(0, yourArmy, foeArmy, armyUnitHolder, mainDisplay);
         

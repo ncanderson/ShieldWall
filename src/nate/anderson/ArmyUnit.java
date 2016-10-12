@@ -1,9 +1,10 @@
+package nate.anderson;
 
 public class ArmyUnit {
     // unit stats to initialize
     private String name;
-    private int morale = 100;
-    private int cohesion = 100;
+    private int morale;
+    private int cohesion;
     private int armour;
     private int skill;
     private String fillString;
@@ -13,7 +14,7 @@ public class ArmyUnit {
     private boolean yourArmy;
     
     // front rank is different for the two armies - important for calculating casualties
-    // at instantiation this array is filled such that idx[0] is the rank closest to the enemy army
+    // at instantiation this array is filled later such that idx[0] is the rank closest to the enemy army
     private int[] frontRank = new int[Config.getUnitRows()];
     
     // track how much space is behind each army so it displays properly
@@ -25,7 +26,7 @@ public class ArmyUnit {
     // the arrays that will hold the unit
     private String[][] army = new String[Config.getUnitRows()][Config.getUnitColumns()];
     
-    // postion in the army unit array
+    // position in the army unit array
     int arrayPosition;
     
     /*
@@ -38,7 +39,25 @@ public class ArmyUnit {
         this.fillString = fillString;
         this.arrayPosition = arrayPosition;
         
-        // construct an array for each army - the [0] of that array will be the front rank, the [n] will be the back
+        morale = Config.getMorale();
+        cohesion = Config.getCohesion();
+        armour = Config.getArmour();
+        skill = Config.getSkill();
+        charged = false;
+        
+        this.arrayPosition = arrayPosition;
+        if (arrayPosition == 0) {
+        	yourArmy = true;
+        }
+        else {
+        	yourArmy = false;
+        }
+        	
+        frontRank = new int[Config.getUnitRows()];
+        armyAdvancePadding = 0; 
+        commandInput = "advance";
+        army = new String[Config.getUnitRows()][Config.getUnitColumns()];
+           
         if (yourArmy) {
             for (int i = 0; i < Config.getUnitRows(); i++) {
                 frontRank[i] = Config.getUnitRows() - (i + 1);
@@ -71,16 +90,24 @@ public class ArmyUnit {
 		return morale;
 	}
 
-	public void setMorale(int morale) {
-		this.morale = morale;
+	public void lowerMorale(int morale) {
+		this.morale -= morale;
+	}
+	
+	public void raiseMorale(int morale) {
+		this.morale += morale;
 	}
 
 	public int getCohesion() {
 		return cohesion;
 	}
 
-	public void setCohesion(int cohesion) {
-		this.cohesion = cohesion;
+	public void lowerCohesion(int cohesion) {
+		this.cohesion -= cohesion;
+	}
+	
+	public void raiseCohesion(int cohesion) {
+		this.cohesion += cohesion;
 	}
 
 	public int getArmour() {
@@ -129,6 +156,16 @@ public class ArmyUnit {
     *  rendering/display/display-helper methods, called as parts of the other methods
     *  
     */
+    
+    // takes array position and returns opponent
+    public int opponent(int activePlayer) {
+        if (arrayPosition == 0) {
+            return 1;
+        }
+        else {
+            return 0;
+        }
+    } 
     
     // loop through the 2D arrays, apply the fill character in each slot
     public void fillUnit() {  
@@ -186,7 +223,7 @@ public class ArmyUnit {
     * 
     */
     
-    public void advanceOrder() {
+    public void advanceOrder(ArmyUnit[] armyUnitHolder, int activePlayer) {
         if (Config.getArmySpacing() <= 0) {
             System.out.println("You are already in melee range! Pick another option!");
         }
@@ -199,7 +236,7 @@ public class ArmyUnit {
         charged = false;
     }
     
-    public void chargeOrder() {
+    public void chargeOrder(ArmyUnit[] armyUnitHolder, int activePlayer) {
         if (Config.getArmySpacing() <= 1) {
             System.out.println("You are too close to charge! Pick another command!");
         }
@@ -210,7 +247,7 @@ public class ArmyUnit {
         }
     }
     
-    public void retreatOrder() {
+    public void retreatOrder(ArmyUnit[] armyUnitHolder, int activePlayer) {
         if (Config.getArmySpacing() == 10) {
             System.out.println("You may not retreat any further! Pick another command!");
         }
@@ -233,7 +270,7 @@ public class ArmyUnit {
     }
     
     // restore morale and cohesion, with a max of 100
-    public void restOrder() {
+    public void restOrder(ArmyUnit[] armyUnitHolder, int activePlayer) {
         morale += 5;
         cohesion += 5;
         if (morale > 100) {
@@ -254,7 +291,7 @@ public class ArmyUnit {
     */
     
     // follow same outline as throwspears
-    public void fightOrder() {
+    public void fightOrder(ArmyUnit[] armyUnitHolder, int activePlayer) {
         int kills = 0;
         int[] rankCount;
             
@@ -263,10 +300,11 @@ public class ArmyUnit {
         }
         else {
             // declare attacker
-            ArmyUnit attacker = armyUnitHolder[Game.getActivePlayer()];
-            ArmyUnit defender = armyUnitHolder[Game.opponent()];
+            ArmyUnit attacker = armyUnitHolder[activePlayer];
+            ArmyUnit defender = armyUnitHolder[opponent(activePlayer)];
+            
             // counts up troops in each rank to use for melee attacks
-            rankCount = armyUnitHolder[getActivePlayer()].countPerRank();
+            rankCount = armyUnitHolder[activePlayer].countPerRank();
             
             // all in front rank, half in second rank, quarter in third rank get an attack
             int meleeAttacks = rankCount[0] + (int)(rankCount[1] / 2) + (int)(rankCount[3] / 4);
@@ -277,18 +315,15 @@ public class ArmyUnit {
                 charged = false;
             }
             
-            // declare defender variable - based on attacking army, determines armour, skill, and where to inflict casualties
-            String defender;
-            
             if (this.yourArmy) {
                 defender = armyUnitHolder[1];
-                if ((Dice.roll + armyUnitHolder[0].skill) >= armyUnitHolder[1].armour) {
+                if ((Dice.roll() + armyUnitHolder[0].skill) >= armyUnitHolder[1].armour) {
                     kills++;
                 }
             }
             else {
                 defender = armyUnitHolder[0];
-                if ((Dice.roll + armyUnitHolder[1].skill) >= armyUnitHolder[0].armour) {
+                if ((Dice.roll() + armyUnitHolder[1].skill) >= armyUnitHolder[0].armour) {
                     kills++;
                 }
             }
@@ -297,42 +332,42 @@ public class ArmyUnit {
             takeCasualties(defender, kills);
             
             // reducing moral and cohesion        
-            defender.morale -= kills;
-            defender.cohesion -= kills;
+            lowerMorale(kills);
+            lowerCohesion(kills);
         }
     }
     
     
     // currently both sides throwing is in this one method. later separate it out so there can be an AI
-    public void throwOrder() {
+    public void throwOrder(ArmyUnit[] armyUnitHolder, int activePlayer) {
         // value to pass to the casualties method later
         int kills = 0;
         double spearThrows = 0;
         
-        if (armySpacing <= 0) {
+        if (Config.getArmySpacing() <= 0) {
             System.out.println("You are too close to throw spears! Pick another command");
         }
-        else if (armySpacing > 5) {
+        else if (Config.getArmySpacing() > 5) {
             System.out.println("You are too far away to throw spears! Pick another command");
         }
         else {
             // throws is 25% of troops remaining * cohesion (lower cohesion reduces throws)
-            spearThrows = (this.countTroops * (this.cohesion / 100.0)) / 10;
+            spearThrows = (this.countTroops() * (this.cohesion / 100.0)) / 10;
             
             // defender determines which army is passed into the take casualties method
-            String defender;
+            ArmyUnit defender;
 
             // loop through each spearThrow, roll to hit, add to kills
             // D20 based hit mechanics
             if (this.yourArmy) {
                 defender = armyUnitHolder[1];
-                if ((Dice.roll + armyUnitHolder[0].skill) >= armyUnitHolder[1].armour) {
+                if ((Dice.roll() + armyUnitHolder[0].skill) >= armyUnitHolder[1].armour) {
                     kills++;
                 }
             }
             else {
                 defender = armyUnitHolder[0];
-                if ((Dice.roll + armyUnitHolder[1].skill) >= armyUnitHolder[0].armour) {
+                if ((Dice.roll() + armyUnitHolder[1].skill) >= armyUnitHolder[0].armour) {
                     kills++;
                 }
             }
@@ -341,8 +376,8 @@ public class ArmyUnit {
             takeCasualties(defender, kills);
             
             // reduce defender morale and cohesion at a lesser rate than melee
-            defender.morale -= (int)(kills * 0.1);
-            defender.cohesion -= (int)(kills * 0.1);
+            defender.lowerMorale((int)(kills * 0.1));
+            defender.lowerCohesion((int)(kills * 0.1));
         }
     }
     
@@ -355,7 +390,7 @@ public class ArmyUnit {
         int rank = defender.frontRank[rankCounter];
         
         while (killCounter < kills) {
-            if ((defender.army).countTroops() <= 0) {
+            if ((defender.countTroops() <= 0)) {
                 if (defender.yourArmy) {
                     System.out.println("You have been vanquished!");
                 }
