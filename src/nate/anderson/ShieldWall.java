@@ -18,6 +18,7 @@ public class ShieldWall {
         Game game = new Game(0, yourArmy, foeArmy, armyUnitHolder, mainDisplay);
         
 //        gameStart method kicks off the loop that only ends when one army is defeated
+//        initializes game with advance as the the 'last command'
         game.gameStart();
         
     }

@@ -3,10 +3,13 @@ package nate.anderson;
 public class Display {
     
     // initial spacing between armies is defined in the Config class
-    private int armySpacing = Config.getArmySpacing;
+    private int armySpacing;
+    private ArmyUnit[] armyUnitHolder;
     
     // new display takes no arguments
-    public Display() {
+    public Display(ArmyUnit[] armyUnitHolder) {
+    	this.armySpacing = Config.getArmySpacing();
+    	this.armyUnitHolder = armyUnitHolder;
     }
     
     public int getArmySpacing() {
@@ -18,7 +21,7 @@ public class Display {
         this.armySpacing -= spacingChange;
     }
     
-    public static void displayBattleField() {
+    public void displayBattleField() {
         
         // main battle display - print out two armies
         System.out.println();

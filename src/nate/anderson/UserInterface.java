@@ -1,4 +1,7 @@
 package nate.anderson;
+
+import sun.net.www.content.text.plain;
+
 public class UserInterface {
    
 	
@@ -22,16 +25,11 @@ public class UserInterface {
         
     }
 
-    public static void promptPlayer() {
+    public static String promptPlayer() {
         // prompt user for input
         System.out.println("Enter your commmand below");
-        userInput = System.console().readLine();
-    
-        if (userInput.equals("")) {
-            userInput = lastInput;
-        }
-        else {
-            lastInput = userInput;
-        }
+        System.out.println(">>> ");
+        String userInput = System.console().readLine();
+        return userInput;
     }
 }
