@@ -8,6 +8,9 @@ public class ShieldWall {
         ArmyUnit yourArmy = new ArmyUnit("Tears of Tyr", "*", 0);
         ArmyUnit foeArmy = new ArmyUnit("Odors of Odin", "@", 1);
         
+        yourArmy.fillUnit();
+        foeArmy.fillUnit();
+        
 //        armyUnitHolder to hold the two units
         ArmyUnit[] armyUnitHolder = { yourArmy, foeArmy };
 

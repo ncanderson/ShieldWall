@@ -95,11 +95,11 @@ public class Game {
         	
             mainDisplay.displayBattleField(armyUnitHolder, lastCommand);
             
-            if (mainDisplay.getArmySpacing() <= 0) {
+            if (Config.getArmySpacing() <= 0) {
                 System.out.println("Enter one of the following commands");
                 System.out.println("- fight           - retreat");
             }
-            else if (mainDisplay.getArmySpacing() <= 5 && mainDisplay.getArmySpacing() > 0) {
+            else if (Config.getArmySpacing() <= 5 && mainDisplay.getArmySpacing() > 0) {
                 System.out.println("Enter one of the following commands");
                 System.out.println("- advance         - charge");
                 System.out.println("- throw spears    - retreat");

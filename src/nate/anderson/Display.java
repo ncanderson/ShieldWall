@@ -39,7 +39,7 @@ public class Display {
         armyUnitHolder[0].renderArmy();
         
         // prints out lines between the armies based on how far you have advanced
-        for (int spacing = 0; spacing < armySpacing; spacing++) {
+        for (int spacing = 0; spacing < Config.getArmySpacing(); spacing++) {
             System.out.println();
         }
         
