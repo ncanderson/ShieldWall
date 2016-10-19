@@ -15,7 +15,7 @@ public class Config{
 		return morale;
 	}
 
-	public void setMorale(int morale) {
+	public static void setMorale(int morale) {
 		Config.morale = morale;
 	}
 
